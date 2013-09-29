@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html ng-app="sampleApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+</head>
+<body>
+<div ng-controller="ModuleDIController">
+	
+    Text Value: {{ textValue }}<br />
+    List Of Items: <ul ng-repeat="item in listOfItems">
+                        <li>{{ item.number }} - {{ item.name }}</li>
+                   </ul><br />
+
+    <input type="button" ng-click="fillItems()" value="Call Service"/>
+
+</div>
+<script type="text/javascript">
+    // define a module with a sample ListOfItemsService that return a list of items when called
+    var sampleServices = angular.module('sampleServices', []);
+    sampleServices.service('ListOfItemsService', function () {
+        this.getList = function () {
+            // pretend call
+            return [
+			    { name: "first value", number: 123 },
+			    { name: "second value", number: 456 },
+			    { name: "third value", number: 789 }
+            ];
+        };
+    })
+
+    // and a module that has a controller that depends on the ListOfItemsService
+    var sampleApp = angular.module('sampleApp', ['sampleServices']);
+    sampleApp.controller('ModuleDIController',
+        ['$scope', 'ListOfItemsService',
+        function ($scope, listOfItemsService) {
+            $scope.textValue = "some text";
+            $scope.listOfItems = [];
+
+            $scope.fillItems = function () {
+                $scope.listOfItems = listOfItemsService.getList();
+            };
+        }]
+    );
+</script>
+</body>
+</html>

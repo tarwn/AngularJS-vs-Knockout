@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title></title>
+	<script type="text/javascript" src="js/lib/knockout-2.3.0.min.js"></script>
+    <script type="text/javascript" src="js/lib/knockout.validation.min.js"></script>
+
+    <script type="text/javascript" src="js/lib/knockout.validation.min.js"></script>
+    <style>
+        input[type=text],
+        input[type=number],
+        form {
+            border: 2px solid green;
+        }
+        input.invalid, 
+        form.invalid {
+            border: 2px solid red;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <form novalidate data-bind="css: { invalid: isValid() == false }">
+        Required Text: <input type="text" data-bind="value: textValue" required /><br />
+        Required Int: <input type="number" data-bind="value: integerValue" min="0" max="5" pattern="^-?\d+$" required /><br />
+        Required Int + 5: <span data-bind="text: calculatedInteger"></span><br />
+        <input type="submit" value="Save" />
+
+        <pre>
+        textValue:
+            value="<span data-bind="text: textValue"></span>"    
+            valid=<span data-bind="text: textValue.__valid__"></span>
+            error=<span data-bind="validationMessage: textValue"></span>
+            or=<span data-bind="text: textValue.error"></span>
+
+        integerValue: 
+            value="<span data-bind="text: integerValue"></span>"
+            valid=<span data-bind="text: integerValue.__valid__"></span>
+            error=<span data-bind="validationMessage: integerValue"></span>
+
+        appForm: 
+            valid="<span data-bind="text: isValid()"></span>"
+            error= <i>no collection at form level</i>
+        </pre>
+    </form>
+</div>
+<script type="text/javascript">
+    // define options to provide similar features as angular: 
+    //  https://github.com/Knockout-Contrib/Knockout-Validation/wiki/Configuration
+    ko.validation.init({
+        insertMessages: false, 
+        decorateElement: true,
+        errorElementClass: 'invalid',
+        messagesOnModified: false,
+        decorateElementOnModified: false,
+        parseInputAttributes: true
+    });
+
+    var SimpleValidationModel = function () {
+        this.textValue = ko.observable("");
+        this.integerValue = ko.observable(0);
+        this.calculatedInteger = ko.computed(function () {
+            return parseInt(this.integerValue()) + 5;
+        }, this);
+    };
+
+    var viewmodel = ko.validatedObservable(new SimpleValidationModel());
+    ko.applyBindings(viewmodel)
+</script>
+</body>
+</html>

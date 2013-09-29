@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title></title>
+	<script type="text/javascript" src="js/lib/knockout-2.3.0.min.js"></script>
+    <script type="text/javascript" src="js/lib/knockout.validation.min.js"></script>
+    <style>
+        input[type=text],
+        input[type=number],
+        form {
+            border: 2px solid green;
+        }
+        input.invalid, 
+        form.invalid {
+            border: 2px solid red;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <form novalidate data-bind="css: { invalid: isValid() == false }">
+        Ceiling Input: <input type="number" data-bind="value: ceilingValue" required /><br />
+        Integer Input: <input type="number" data-bind="value: integerValue" pattern="^-?\d+$" required /><br />
+        <input type="submit" value="Save" />
+
+        <pre>
+        textValue:
+            value="<span data-bind="text: ceilingValue"></span>"    
+            valid=<span data-bind="text: ceilingValue.__valid__"></span>
+            error=<span data-bind="validationMessage: ceilingValue"></span>
+            or=<span data-bind="text: ceilingValue.error"></span>
+
+        integerValue: 
+            value="<span data-bind="text: integerValue"></span>"
+            valid=<span data-bind="text: integerValue.__valid__"></span>
+            error=<span data-bind="validationMessage: integerValue"></span>
+
+        appForm: 
+            valid="<span data-bind="text: isValid()"></span>"
+            error= <i>no collection at form level</i>
+        </pre>
+    </form>
+</div>
+<script type="text/javascript">
+    // define options to provide similar features as angular: 
+    //  https://github.com/Knockout-Contrib/Knockout-Validation/wiki/Configuration
+    ko.validation.init({
+        insertMessages: false,
+        decorateElement: true,
+        errorElementClass: 'invalid',
+        messagesOnModified: false,
+        decorateElementOnModified: false,
+        parseInputAttributes: true
+    });
+
+    // add the custom validation rule
+    ko.validation.rules['ceiling'] = {
+        validator: function (val, otherVal) {
+            var actualOther = parseInt(ko.isObservable(otherVal) ? otherVal() : otherVal);
+            if (isNaN(actualOther))
+                return true;
+            else
+                return parseInt(val) <= actualOther;
+        },
+        message: 'The field must be less than or equal to {0}'
+    };
+    ko.validation.registerExtenders();
+
+    var ComplexValidationModel = function () {
+        this.ceilingValue = ko.observable(10);
+        this.integerValue = ko.observable(0).extend({ ceiling: this.ceilingValue });
+    };
+
+    var viewmodel = ko.validatedObservable(new ComplexValidationModel());
+    ko.applyBindings(viewmodel)
+</script>
+</body>
+</html>

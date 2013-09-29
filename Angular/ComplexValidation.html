@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html ng-app="sampleApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+    <style>
+        .ng-valid {
+            border: 2px solid green;
+        }
+        .ng-invalid {
+            border: 2px solid red;
+        }
+    </style>
+</head>
+<body>
+<div ng-controller="ComplexValidationController">
+    <form name="appForm" novalidate>
+        Ceiling Input: <input type="number" name="ceilingValueInput" ng-model="ceilingValue" required /><br />
+        Integer Input: <input type="number" name="integerValueInput" ng-model="integerValue" ng-pattern="/^-?\d+$/" ceiling-validate="{{ ceilingValue }}" required /><br />
+        <input type="submit" value="Save" />
+
+        <pre>
+        ceilingValue: 
+            value="{{ ceilingValue }}"    
+            valid={{ appForm.ceilingValueInput.$valid }}
+            error={{ appForm.ceilingValueInput.$error }}
+
+        integerValue: 
+            value="{{ integerValue }}"
+            valid={{ appForm.integerValueInput.$valid }}
+            error={{ appForm.integerValueInput.$error }}
+
+        appForm: 
+            valid="{{ appForm.$valid }}"
+            error={{ appForm.$error }}
+            required={{ appForm.$error.required }}
+        </pre>
+    </form>
+</div>
+<script type="text/javascript">
+    var sampleApp = angular.module('sampleApp', []);
+
+    sampleApp.controller('ComplexValidationController', function ($scope) {
+        $scope.ceilingValue = 10;
+        $scope.integerValue = 1;
+    });
+
+    sampleApp.directive('ceilingValidate', function () {
+        return {
+            // can only be used as an attribute
+            restrict: 'A',
+            // must also have an ngModel attribute defined
+            require: 'ngModel',
+            // explicitly create one-way binding to attribute value so we can watch it
+            scope: {
+                ceilingValidate: "@"
+            },
+            // and define the logic for the link
+            link: function (scope, instanceElement, instanceAttributes, controller) {
+                // per http://www.benlesh.com/2012/12/angular-js-custom-validation-via.html
+                // let's add a parser (html input -> model) and a formatter (model -> html input)
+
+                // when the value in the ceiling changes, re-evaluate validity
+                scope.$watch('ceilingValidate', function (newValue, oldValue) {
+                    console.log("here1");
+                    if (newValue !== undefined) {
+                        var valid = (parseInt(controller.$modelValue) <= parseInt(newValue));
+                        controller.$setValidity('ceilingValidate', valid);
+                    }
+                }, true);
+
+                // when a new value comes in, evaluate validity
+                controller.$parsers.unshift(function (value) {
+                    console.log("here2");
+                    var valid = (parseInt(value) <= parseInt(instanceAttributes.ceilingValidate));
+                    controller.$setValidity('ceilingValidate', valid);
+                    return valid ? value : undefined;
+                });
+
+                // when a value is set from the mode, evaluate validity
+                controller.$formatters.unshift(function (value) {
+                    console.log("here3");
+                    if (instanceAttributes.ceilingValidate !== undefined) {
+                        var valid = (parseInt(value) <= parseInt(instanceAttributes.ceilingValidate));
+                        controller.$setValidity('ceilingValidate', valid);
+                    }
+                    else {
+                        
+                    }
+                    return value;
+                });
+
+            }
+        };
+    });
+
+</script>
+</body>
+</html>

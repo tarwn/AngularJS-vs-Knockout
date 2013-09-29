@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+    <script type="text/javascript" src="js/lib/script.js"></script>
+</head>
+<body>
+<div ng-controller="ModuleDIController">
+	
+    Text Value: {{ textValue }}<br />
+    List Of Items: <ul ng-repeat="item in listOfItems">
+                        <li>{{ item.number }} - {{ item.name }}</li>
+                   </ul><br />
+
+    <input type="button" ng-click="fillItems()" value="Call Service"/>
+
+</div>
+<script type="text/javascript">
+    $script.path('js/AsyncDI/');
+    $script(['sampleApp', 'sampleServices'], function () {
+        angular.bootstrap(document, ['sampleApp']);
+    });
+</script>
+</body>
+</html>

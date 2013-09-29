@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html ng-app="sampleApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+    <style>
+        h1 {
+            font-size: 12pt
+        }
+        .fancy-pants {
+            border: 3px dashed #008800;
+            background-color: #FFDDDD;
+            padding: 4px 4px 14px 4px;
+            width: 200px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="TransclusionTemplatingController">
+        <!-- don't try to use myAwesomeContainer, it won't work -->
+        <my-awesome-container h1-title="{{ title }}">
+            Here is my content: "{{ content }}"
+        </my-awesome-container>
+    </div>
+    <script type="text/javascript">
+        var sampleApp = angular.module('sampleApp', []);
+
+        sampleApp.directive('myAwesomeContainer', function () {
+            return {
+                // must be an element
+                restrict: 'E',
+                // replace it
+                replace: true,
+                // use transclusion
+                transclude: true,
+                // local scope 
+                scope: {
+                    titleValue: "@h1Title"
+                },
+                // pretending we have a fancy set of HTML for the container
+                template: '<div class="fancy-pants"><h1>{{ titleValue }}</h1><div ng-transclude></div></div>'
+            }
+        });
+
+        sampleApp.controller('TransclusionTemplatingController', function ($scope) {
+            $scope.content = "Some Dynamic Content";
+            $scope.title = "A Dynamic Title";
+        });
+    </script>
+</body>
+</html>

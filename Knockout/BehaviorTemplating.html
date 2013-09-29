@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="js/lib/knockout-2.3.0.min.js"></script>
+    <style>
+        h1 {
+            font-size: 12pt
+        }
+        .fancy-pants {
+            border: 3px dashed #008800;
+            background-color: #FFDDDD;
+            padding: 4px 4px 14px 4px;
+            width: 200px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div data-bind="template: { name: 'container-template', data: { title: title, content: content }, afterRender: makeItToggly }"></div>
+
+    <script type="text/html" id="container-template">
+        <div class="fancy-pants">
+            <h1 data-bind="text: title"></h1>
+            <div data-bind="text: content"></div>
+        </div>
+    </script>
+    <script type="text/javascript">
+        var SimpleTemplatingModel = function () {
+            this.title = ko.observable("A Dynamic Title");
+            this.content = ko.observable("Click title to toggle visibility");
+        };
+
+        var viewmodel = new SimpleTemplatingModel();
+        ko.applyBindings(viewmodel)
+
+        // some jQuery behavior stuff
+        function makeItToggly(elem) {
+            $(elem).click(function () {
+                $(elem).find('div').toggle();
+            });
+        }
+    </script>
+</body>
+</html>

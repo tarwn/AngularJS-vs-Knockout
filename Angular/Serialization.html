@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html ng-app="sampleApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+</head>
+<body>
+<div ng-controller="SerializationController">
+    <form name="appForm" novalidate>
+        Text: <input type="text" name="textValueInput" ng-model="model.textValue" required /><br />
+        Int: <input type="number" ng-model="model.integerValue" required /><br />
+        Int + 5: {{ model.getCalculatedInteger() }}<br />
+        Other Int + 5: {{ model.calculatedInteger }}<br />
+        <input type="submit" />
+        <pre>
+        json: {{ $json }}
+        </pre>
+    </form>
+</div>
+<script type="text/javascript">
+    var sampleApp = angular.module('sampleApp', []);
+
+    sampleApp.controller('SerializationController', function ($scope) {
+        $scope.model = {
+            textValue: "",
+            integerValue: 0
+        };
+
+        // this calculated value won't show up in json
+        $scope.model.getCalculatedInteger = function () {
+            return $scope.model.integerValue + 5;
+        };
+
+        // this one will show up
+        $scope.model.calculatedInteger = 0;
+        $scope.$watch('model.integerValue', function(newVal, oldVal){
+            $scope.model.calculatedInteger = $scope.model.getCalculatedInteger();
+        });
+
+        // json output when changes occur inside the model object
+        $scope.$watch("model", function () {
+            $scope.$json = angular.toJson($scope.model);
+        }, true);
+    });
+</script>
+</body>
+</html>

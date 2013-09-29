@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html ng-app="sampleApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+    <style>
+        h1 {
+            font-size: 12pt
+        }
+    </style>
+</head>
+<body>
+    <div ng-controller="TemplatingController">
+        <h1>As an Element</h1>
+        <twitter uservalue="{{ username }}"></twitter>
+
+        <h1>As an Attribute</h1>
+        <span twitter2="{{ username }}"></span>
+
+    </div>
+    <script type="text/javascript">
+        var sampleApp = angular.module('sampleApp', []);
+
+        sampleApp.directive('twitter', function(){
+            return {
+                // must be an element
+                restrict: 'E',
+                // replace it
+                replace: true,
+                // local scope will have a one-way binding to username from the referencing scope
+                scope: {
+                    user: '@uservalue'
+                },
+                // just a basic div instead of pulling 
+                template: '<iframe allowtransparency="true" frameborder="0" scrolling="no" src="//platform.twitter.com/widgets/follow_button.html?screen_name={{ user }}"  style="width:300px; height:20px;"></iframe>'
+            }
+        });
+
+        sampleApp.directive('twitter2', function () {
+            return {
+                // must be an element
+                restrict: 'A',
+                // replace it
+                replace: true,
+                // local scope will have a one-way binding to username from the referencing scope
+                scope: {
+                    user: '@twitter2'
+                },
+                // just a basic div instead of pulling 
+                template: '<iframe allowtransparency="true" frameborder="0" scrolling="no" src="//platform.twitter.com/widgets/follow_button.html?screen_name={{ user }}"  style="width:300px; height:20px;"></iframe>'
+            }
+        });
+
+        sampleApp.controller('TemplatingController', function ($scope) {
+            $scope.username = "tarwn";
+        });
+    </script>
+</body>
+</html>

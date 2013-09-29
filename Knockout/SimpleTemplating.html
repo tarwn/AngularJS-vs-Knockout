@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title></title>
+	<script type="text/javascript" src="js/lib/knockout-2.3.0.min.js"></script>
+    <style>
+        h1 {
+            font-size: 12pt
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h1>Inside an Element</h1>
+    <div data-bind="template: { name: 'twitter-template', data: { user: username }}"></div>
+
+    <h1>Without an Element</h1>
+    <!-- ko template: { name: "twitter-template", data: { user: username } } --><!-- /ko -->
+</div>
+<script type="text/html" id="twitter-template">
+    <iframe allowtransparency="true" frameborder="0" scrolling="no"
+        data-bind="attr: { src: '//platform.twitter.com/widgets/follow_button.html?screen_name=' + user() }"
+        style="width:300px; height:20px;"></iframe>
+</script>
+<script type="text/javascript">
+    var SimpleTemplatingModel = function () {
+        this.username = ko.observable("tarwn");
+    };
+
+    var viewmodel = new SimpleTemplatingModel();
+    ko.applyBindings(viewmodel)
+</script>
+</body>
+</html>

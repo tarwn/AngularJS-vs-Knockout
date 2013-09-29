@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title></title>
+	<script type="text/javascript" src="js/lib/knockout-2.3.0.min.js"></script>
+	<style>
+		h1 {
+			font-size: 12pt
+		}
+		.fancy-pants {
+			border: 3px dashed #008800;
+			background-color: #FFDDDD;
+			padding: 4px 4px 14px 4px;
+			width: 200px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+    <div data-bind="template: { name: 'container-template', data: { title: title, subtemplate: 'sample-contents', submodel: { content: content }}}"></div>
+
+    <script type="text/html" id="container-template">
+        <div class="fancy-pants">
+            <h1 data-bind="text: title"></h1>
+            <div data-bind="template: { name: subtemplate, data: submodel}"></div>
+        </div>
+    </script>
+   
+	<script type="text/html" id="sample-contents">
+        <div data-bind="text: content">        
+        </div>
+    </script>
+    
+	<script type="text/javascript">
+        var SimpleTemplatingModel = function () {
+            this.title = ko.observable("A Dynamic Title");
+            this.content = ko.observable("Some Dynamic Content");
+        };
+
+        var viewmodel = new SimpleTemplatingModel();
+        ko.applyBindings(viewmodel)
+    </script>
+
+</body>
+</html>

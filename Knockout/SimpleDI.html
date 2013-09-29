@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title></title>
+	<script type="text/javascript" src="js/lib/knockout-2.3.0.min.js"></script>
+	<script type="text/javascript" src="js/lib/require-2.1.8.min.js"></script>
+</head>
+<body>
+<div>
+
+    Text Value: <span data-bind="text: textValue"></span><br />
+    List Of Items: <ul data-bind="foreach: listOfItems">
+		                <li data-bind="text: number + ' - ' + name"></li>
+                   </ul><br />
+
+    <input type="button" data-bind="click: fillItems" value="Call Service"/>
+
+</div>
+<script type="text/javascript">
+    // define a ListOfItemsService service that return a list of items when called
+    define("sampleServices/ListOfItemsService", function () {
+        // return an object literal for the service object
+        return {
+            getList: function () {
+                return [
+                    { name: "first value", number: 123 },
+                    { name: "second value", number: 456 },
+                    { name: "third value", number: 789 }
+                ];
+            }
+        }
+    });
+
+    // and a module that has a controller that depends on the ListOfItemsService
+    define("sampleApp/ModuleDIModel",
+        ["sampleServices/ListOfItemsService"],
+        function (listOfItemsService) {
+            // return a constructor for the model
+            return function () {
+                this.textValue = ko.observable("some text");
+                this.listOfItems = ko.observableArray([]);
+
+                this.fillItems = function () {
+                    this.listOfItems(listOfItemsService.getList());
+                };
+            }
+        }
+    );
+
+    // use require to define dependencies to start and bind viewmodel
+    require(["sampleApp/ModuleDIModel"],
+        function (ModuleDIModel) {
+            var viewmodel = new ModuleDIModel();
+            ko.applyBindings(viewmodel);
+        }
+    );
+</script>
+</body>
+</html>
