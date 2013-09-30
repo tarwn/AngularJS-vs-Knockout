@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html ng-app="sampleApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+</head>
+<body>
+<div ng-view>
+</div>
+<script type="text/javascript">
+    var sampleApp = angular.module('sampleApp', []);
+
+    sampleApp.config(['$routeProvider', function (routeProvider) {
+        // unlike the documentation, I had to put quotes around my controllers - maybe they had global variables?
+        routeProvider.when('/ListOfStuff', { templateUrl: 'partials/Routing/ListOfStuff.html', controller: 'ListOfStuffController' });
+        routeProvider.when('/StuffDetail/:id', { templateUrl: 'partials/Routing/StuffDetail.html', controller: 'StuffDetailController' });
+        routeProvider.otherwise({ redirectTo: '/ListOfStuff' });
+    }]);
+
+    // basic fake service with a GetAll and GetById call
+    sampleApp.service('ListOfStuffService', function () {
+        var stuff = [
+            { id: 1, name: "First Item", description: "It's the first item, woohoo!" },
+            { id: 2, name: "Second Item", description: "Numero Dos!" },
+            { id: 3, name: "Third Item", description: "The third item, this one is always out of stock" }
+        ];
+
+        return {
+            getAll: function () {
+                return stuff;
+            },
+            getById: function (id) {
+                for (var i in stuff) {
+                    if (stuff[i].id == id)
+                        return stuff[i];
+                }
+            }
+        };
+    });
+
+    sampleApp.controller('ListOfStuffController', ['$scope', 'ListOfStuffService', function ($scope, listService) {
+        $scope.test = 5;
+        $scope.listOfItems = listService.getAll();
+        console.log($scope.listOfItems);
+    }]);
+
+    sampleApp.controller('StuffDetailController', ['$scope', '$routeParams', 'ListOfStuffService', function ($scope, routeParams, listService) {
+        $scope.item = listService.getById(routeParams.id);
+    }]);
+</script>
+</body>
+</html>

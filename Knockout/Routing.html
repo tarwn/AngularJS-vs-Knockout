@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title></title>
+	<script type="text/javascript" src="js/lib/require-2.1.8.min.js"></script>
+</head>
+<body>
+<!-- ko if: viewmodel() -->
+<div data-bind="template: { name: viewmodel().template, data: viewmodel }">
+</div>
+<!-- /ko -->
+<script type="text/javascript">
+    // might as well use requirejs instead of continuing to put script tags everywhere
+    require.config({
+        paths: {
+            'knockout':     'js/lib/knockout-2.3.0.min',
+            'jquery':       'js/lib/jquery-1.10.2.min',
+            'sammy':        'js/lib/sammy-0.7.4.min'
+        },
+        shim: {
+            'sammy': {
+                deps: ['jquery'],
+                exports: 'Sammy'
+            }
+        }
+    });
+
+    // define route and outer ko viewmodel
+    require(['knockout', 'ko-app', 'sammy'], function (ko, AppViewModel, sammy) {
+        var app = new AppViewModel();
+        ko.applyBindings(app);
+
+        var routing = sammy(function () {
+
+            this.get('#/ListOfStuff', function (context) {
+                require(['ListOfStuffViewModel'], function (ViewModel) {
+                    app.viewmodel(new ViewModel());
+                });
+            });
+
+            this.get('#/StuffDetail/:id', function (context) {
+                var id = this.params['id'];
+                require(['StuffDetailViewModel'], function (ViewModel) {
+                    app.viewmodel(new ViewModel(id));
+                });
+            });
+
+            this.get('', function (context) {
+                this.redirect('#/ListOfStuff');
+            });
+
+        });
+        routing.run();
+    });
+
+    // basic fake service with a GetAll and GetById call
+    define("ListOfStuffService", function () {
+        var stuff = [
+                   { id: 1, name: "First Item", description: "It's the first item, woohoo!" },
+                   { id: 2, name: "Second Item", description: "Numero Dos!" },
+                   { id: 3, name: "Third Item", description: "The third item, this one is always out of stock" }
+        ];
+
+        return {
+            getAll: function () {
+                return stuff;
+            },
+            getById: function (id) {
+                for (var i in stuff) {
+                    if (stuff[i].id == id) 
+                        return stuff[i];
+                }
+            }
+        };
+    });
+
+    // and a module that has a controller that depends on the ListOfItemsService
+    define("ko-app",
+        ["knockout"],
+        function (ko) {
+            return function () {
+                this.viewmodel = ko.observable();
+            }
+        }
+    );
+
+    // and a module that has a controller that depends on the ListOfItemsService
+    define("ListOfStuffViewModel",
+        ["knockout", "ListOfStuffService"],
+        function (ko, listOfItemsService) {
+            return function () {
+                this.template = "ListOfStuffViewModel";
+                var items = listOfItemsService.getAll();
+                this.listOfItems = ko.observableArray(items);
+            }
+        }
+    );
+
+    // and a module that has a controller that depends on the ListOfItemsService
+    define("StuffDetailViewModel",
+        ["knockout", "ListOfStuffService"],
+        function (ko, listOfItemsService) {
+            return function (id) {
+                this.template = "StuffDetailViewModel";
+                var item = listOfItemsService.getById(id);
+                this.item = ko.observable(item);
+            }
+        }
+    );
+</script>
+<script type="text/html" id="ListOfStuffViewModel">
+    <ul data-bind="foreach: listOfItems">
+        <li><a data-bind="attr: { href: '#/StuffDetail/' + id }, text: name"></a></li>
+    </ul>
+</script>
+<script type="text/html" id="StuffDetailViewModel">
+    <div>
+        <a href="#/ListOfStuff">Back to list</a><br />
+        <br />
+        <b>Id:</b> <span data-bind="text: item().id"></span><br />
+        <b>Name:</b> <span data-bind="text: item().name"></span><br />
+        <b>Description:</b> <span data-bind="text: item().description"></span><br />
+    </div>
+</script>
+</body>
+</html>

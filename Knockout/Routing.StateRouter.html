@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title></title>
+	<script type="text/javascript" src="js/lib/require-2.1.8.min.js"></script>
+</head>
+<body>
+<!-- ko if: viewmodel() -->
+<div data-bind="template: { name: viewmodel().template, data: viewmodel }">
+</div>
+<!-- /ko -->
+<script type="text/javascript">
+    // might as well use requirejs instead of continuing to put script tags everywhere
+    require.config({
+        paths: {
+            'knockout':     'js/lib/knockout-2.3.0.min',
+            'jquery':       'js/lib/jquery-1.10.2.min',
+            'history':      'js/lib/jquery.history-1.8b2',
+            'staterouter':  'js/lib/staterouter'
+        },
+        shim: {
+            'staterouter': {
+                deps: ['history'],
+                exports: 'staterouter'
+            },
+            'history': {
+                deps: ['jquery'],
+                exports: 'History'
+            }
+        }
+    });
+
+    // define route and outer ko viewmodel
+    require(['knockout', 'ko-app', 'staterouter'], function (ko, appViewModel, staterouter) {
+        var router = new staterouter.Router();
+
+        router.route('http://localhost:8361/AngularAndKnockout/Knockout/Routing.html#/', function () {
+            router.navigate('http://localhost:8361/AngularAndKnockout/Knockout/Routing.html#/ListOfStuff');
+        });
+
+        router.route('http://localhost:8361/AngularAndKnockout/Knockout/Routing.html#/ListOfStuff', function () {
+            require(['ListOfStuffViewModel'], function (ViewModel) {
+                app.viewmodel = new ViewModel();
+            });
+        });
+
+        router.route('http://localhost:8361/AngularAndKnockout/Knockout/Routing.html#/StuffDetail/:id', function (id) {
+            require(['StuffDetailViewModel'], function (ViewModel) {
+                app.viewmodel = new ViewModel(id);
+            });
+        });
+
+        ko.applyBindings(new appViewModel());
+        router.perform();
+    });
+
+    // basic fake service with a GetAll and GetById call
+    define("ListOfStuffService", function () {
+        var stuff = [
+                   { id: 1, name: "First Item", description: "It's the first item, woohoo!" },
+                   { id: 2, name: "Second Item", description: "Numero Dos!" },
+                   { id: 3, name: "Third Item", description: "The third item, this one is always out of stock" }
+        ];
+
+        return {
+            getAll: function () {
+                return stuff;
+            },
+            getById: function (id) {
+                for (var i in stuff) {
+                    if (stuff[i].id == id)
+                        return stuff[i];
+                }
+            }
+        };
+    });
+
+    // and a module that has a controller that depends on the ListOfItemsService
+    define("ko-app",
+        ["knockout"],
+        function (ko) {
+            return function () {
+                this.viewmodel = ko.observable();
+            }
+        }
+    );
+
+    // and a module that has a controller that depends on the ListOfItemsService
+    define("ListOfStuffViewModel",
+        ["ListOfStuffService"],
+        function (listOfItemsService) {
+            return function () {
+                this.template = "ListOfStuffViewModel";
+                var items = listOfItemsService.getAll();
+                this.listOfItems = ko.observableArray(items);
+            }
+        }
+    );
+
+    // and a module that has a controller that depends on the ListOfItemsService
+    define("StuffDetailViewModel",
+        ["ListOfStuffService"],
+        function (listOfItemsService) {
+            return function () {
+                this.template = "StuffDetailViewModel";
+                var item = listOfItemsService.getById(id);
+                this.item = ko.observable(item);
+            }
+        }
+    );
+</script>
+<script type="text/html" id="ListOfStuffViewModel">
+    ListOfStuffViewModel
+</script>
+<script type="text/html" id="StuffDetailViewModel">
+    StuffDetailViewModel
+</script>
+</body>
+</html>
