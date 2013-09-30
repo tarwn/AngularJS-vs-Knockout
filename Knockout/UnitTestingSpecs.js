@@ -5,9 +5,9 @@
 /// <reference path="js/UnitTesting/sampleServices/ListOfItemsService.js" />
 
 require.config({
-    baseUrl: "js/UnitTesting",
+    baseUrl: "Knockout/js/UnitTesting",
     paths: {
-        "Squire": "../../Knockout/js/lib/Squire"
+        "Squire": "../../js/lib/Squire"
     }
 });
 
@@ -23,10 +23,11 @@ describe("Knockout", function () {
         };
 
         async.beforeEach(function (done) {
-            require(['Squire'], function (squire) {
-                squire.mock(["ListOfItemsService"], mockService)
-                      .require(["ModuleDIModel", "mocks"], function (viewmodelInstance, mocks) {
-                          viewmodel = viewmodelInstance;
+            require(['Squire'], function (Squire) {
+                var squire = new Squire();
+                squire.mock(["sampleServices/ListOfItemsService"], mockService)
+                      .require(["sampleApp/ModuleDIModel"], function (ModuleDIModel) {
+                          viewmodel = new ModuleDIModel();
                           done();
                       });
             });
