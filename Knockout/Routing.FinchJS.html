@@ -8,6 +8,7 @@
 </head>
 <body>
 <!-- ko if: viewmodel() -->
+    test
 <div data-bind="template: { name: viewmodel().template, data: viewmodel }">
 </div>
 <!-- /ko -->
@@ -16,44 +17,37 @@
     require.config({
         paths: {
             'knockout':     'js/lib/knockout-2.3.0.min',
-            'jquery':       'js/lib/jquery-1.10.2.min',
-            'history':      'js/lib/jquery.history-1.8b2',
-            'staterouter':  'js/lib/staterouter'
+            'finch':        'js/lib/finch-0.5.13.min'
         },
         shim: {
-            'staterouter': {
-                deps: ['history'],
-                exports: 'staterouter'
-            },
-            'history': {
-                deps: ['jquery'],
-                exports: 'History'
+            'finch':{
+                exports: 'Finch'
             }
         }
     });
 
     // define route and outer ko viewmodel
-    require(['knockout', 'ko-app', 'staterouter'], function (ko, appViewModel, staterouter) {
-        var router = new staterouter.Router();
+    require(['knockout', 'ko-app', 'finch'], function (ko, AppViewModel, finch) {
+        var app = new AppViewModel();
 
-        router.route('http://localhost:8361/AngularAndKnockout/Knockout/Routing.html#/', function () {
-            router.navigate('http://localhost:8361/AngularAndKnockout/Knockout/Routing.html#/ListOfStuff');
+        finch.route("/", function () {
+            finch.call("/ListOfStuff");
         });
 
-        router.route('http://localhost:8361/AngularAndKnockout/Knockout/Routing.html#/ListOfStuff', function () {
+        finch.route("/ListOfStuff", function () {
             require(['ListOfStuffViewModel'], function (ViewModel) {
-                app.viewmodel = new ViewModel();
+                app.viewmodel(new ViewModel());
             });
         });
 
-        router.route('http://localhost:8361/AngularAndKnockout/Knockout/Routing.html#/StuffDetail/:id', function (id) {
+        finch.route("/StuffDetail/:id", function (bindings) {
             require(['StuffDetailViewModel'], function (ViewModel) {
-                app.viewmodel = new ViewModel(id);
+                app.viewmodel(new ViewModel(bindings.id));
             });
         });
 
-        ko.applyBindings(new appViewModel());
-        router.perform();
+        ko.applyBindings(app);
+        finch.listen();
     });
 
     // basic fake service with a GetAll and GetById call
@@ -89,8 +83,8 @@
 
     // and a module that has a controller that depends on the ListOfItemsService
     define("ListOfStuffViewModel",
-        ["ListOfStuffService"],
-        function (listOfItemsService) {
+        ["knockout", "ListOfStuffService"],
+        function (ko, listOfItemsService) {
             return function () {
                 this.template = "ListOfStuffViewModel";
                 var items = listOfItemsService.getAll();
@@ -101,9 +95,9 @@
 
     // and a module that has a controller that depends on the ListOfItemsService
     define("StuffDetailViewModel",
-        ["ListOfStuffService"],
-        function (listOfItemsService) {
-            return function () {
+        ["knockout", "ListOfStuffService"],
+        function (ko, listOfItemsService) {
+            return function (id) {
                 this.template = "StuffDetailViewModel";
                 var item = listOfItemsService.getById(id);
                 this.item = ko.observable(item);
@@ -112,10 +106,18 @@
     );
 </script>
 <script type="text/html" id="ListOfStuffViewModel">
-    ListOfStuffViewModel
+    <ul data-bind="foreach: listOfItems">
+        <li><a data-bind="attr: { href: '#/StuffDetail/' + id }, text: name"></a></li>
+    </ul>
 </script>
 <script type="text/html" id="StuffDetailViewModel">
-    StuffDetailViewModel
+    <div>
+        <a href="#/ListOfStuff">Back to list</a><br />
+        <br />
+        <b>Id:</b> <span data-bind="text: item().id"></span><br />
+        <b>Name:</b> <span data-bind="text: item().name"></span><br />
+        <b>Description:</b> <span data-bind="text: item().description"></span><br />
+    </div>
 </script>
 </body>
 </html>
