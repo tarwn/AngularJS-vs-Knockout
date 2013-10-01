@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title></title>
+	<script type="text/javascript" src="js/lib/require-2.1.8.min.js"></script>
+</head>
+<body>
+<!-- ko if: viewmodel() -->
+<div data-bind="template: { name: viewmodel().template, data: viewmodel }">
+</div>
+<!-- /ko -->
+<script type="text/javascript">
+    // might as well use requirejs instead of continuing to put script tags everywhere
+    require.config({
+        baseUrl: 'js/Routing',
+        paths: {
+            'knockout':     '../lib/knockout-2.3.0.min',
+            'finch': '../lib/finch-0.5.13.min',
+            // reuirements for knockout external template engine
+            'jquery':       '../lib/jquery-1.10.2.min',
+            'infuser':      '../lib/infuser-amd.min',
+            'trafficCop':   '../lib/TrafficCop.min',
+            'koext':        '../lib/koExternalTemplateEngine-amd.min',
+        },
+        shim: {
+            'finch': {
+                exports: 'Finch'
+            },
+            'infuser': {
+                deps: ['jquery']
+            }
+        }
+    });
+
+    // hack in a 'ko' library since that's what ko-ext expects
+    define('ko', ['knockout'], function(ko){ return ko;});
+
+    // define route and outer ko viewmodel
+    require(['knockout', 'mainApp', 'finch', 'infuser', 'koext'], function (ko, AppViewModel, finch, infuser, koext) {
+        var app = new AppViewModel();
+
+        // templates
+        infuser.defaults.templateUrl = "templates/Routing"
+
+        // routes
+        finch.route("/", function () {
+            finch.call("/ListOfStuff");
+        });
+
+        finch.route("/ListOfStuff", function () {
+            require(['ListOfStuffViewModel'], function (ViewModel) {
+                app.viewmodel(new ViewModel());
+            });
+        });
+
+        finch.route("/StuffDetail/:id", function (bindings) {
+            require(['StuffDetailViewModel'], function (ViewModel) {
+                app.viewmodel(new ViewModel(bindings.id));
+            });
+        });
+
+        // start running
+        ko.applyBindings(app);
+        finch.listen();
+    });
+
+</script>
+</body>
+</html>

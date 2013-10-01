@@ -17,37 +17,36 @@
         baseUrl: 'js/Routing',
         paths: {
             'knockout':     '../lib/knockout-2.3.0.min',
-            'finch':        '../lib/finch-0.5.13.min'
+            'director':     '../lib/director-1.2.0.min'
         },
         shim: {
-            'finch': {
-                exports: 'Finch'
+            'director': {
+                exports: 'Router'
             }
         }
     });
 
     // define route and outer ko viewmodel
-    require(['knockout', 'mainApp', 'finch'], function (ko, AppViewModel, finch) {
+    require(['knockout', 'mainApp', 'director'], function (ko, AppViewModel, director) {
         var app = new AppViewModel();
 
-        finch.route("/", function () {
-            finch.call("/ListOfStuff");
-        });
-
-        finch.route("/ListOfStuff", function () {
-            require(['ListOfStuffViewModel'], function (ViewModel) {
-                app.viewmodel(new ViewModel());
-            });
-        });
-
-        finch.route("/StuffDetail/:id", function (bindings) {
-            require(['StuffDetailViewModel'], function (ViewModel) {
-                app.viewmodel(new ViewModel(bindings.id));
-            });
-        });
+        var routes = {
+            '/ListOfStuff': function () {
+                                require(['ListOfStuffViewModel'], function (ViewModel) {
+                                    app.viewmodel(new ViewModel());
+                                })},
+            '/StuffDetail/:id': function (id) {
+                                require(['StuffDetailViewModel'], function (ViewModel) {
+                                    app.viewmodel(new ViewModel(id));
+                                })}
+        };
 
         ko.applyBindings(app);
-        finch.listen();
+        var router = director(routes);
+        router.init('/ListOfStuff')
+              .configure({
+                  html5history: false
+              });
     });
 
     // basic fake service with a GetAll and GetById call
