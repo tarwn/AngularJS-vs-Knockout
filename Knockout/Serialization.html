@@ -6,9 +6,9 @@
 <body>
 <div>
 	<form novalidate>
-        Text: <input type="text" data-bind="value: textValue" /><br />
-        Int: <input type="number" data-bind="value: integerValue" /><br />
-        Int + 5: <span data-bind="text: calculatedInteger"></span><br />
+        Text: <input type="text" data-bind="value: model.textValue" /><br />
+        Int: <input type="number" data-bind="value: model.integerValue" /><br />
+        Int + 5: <span data-bind="text: model.calculatedInteger"></span><br />
         <input type="submit" value="Save" />
 
         <pre>
@@ -19,18 +19,17 @@ json: <span data-bind="text: json"></span>
 <script type="text/javascript">
    
     var SerializationModel = function () {
-        this.textValue = ko.observable("");
-        this.integerValue = ko.observable(0);
-        this.calculatedInteger = ko.computed(function () {
-            return parseInt(this.integerValue()) + 5;
+        this.model = {
+            textValue: ko.observable(""),
+            integerValue: ko.observable(0)
+        };
+
+        this.model.calculatedInteger = ko.computed(function () {
+            return parseInt(this.model.integerValue()) + 5;
         }, this);
+
         this.json = ko.computed(function () {
-            return ko.toJSON(this, function (key, value) {
-                if (key == "json")
-                    return undefined;
-                else
-                    return value;
-            }, " ");
+            return ko.toJSON(this.model);
         }, this);
     };
 

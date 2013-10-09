@@ -12,50 +12,50 @@
     </style>
 </head>
 <body>
-    <div ng-controller="TransclusionTemplatingController">
-        <!-- don't try to use myAwesomeContainer, it won't work -->
-        <expanding-container clickable-title="{{ title }}">
-            Here is my content: "{{ content }}"
-        </expanding-container>
-    </div>
-    <script type="text/javascript">
-        var sampleApp = angular.module('sampleApp', []);
+<div ng-controller="TransclusionTemplatingController">
+    <!-- don't try to use myAwesomeContainer, it won't work -->
+    <expanding-container clickable-title="{{ title }}">
+        Here is my content: "{{ content }}"
+    </expanding-container>
+</div>
+<script type="text/javascript">
+    var sampleApp = angular.module('sampleApp', []);
 
-        sampleApp.directive('expandingContainer', function () {
-            return {
-                // must be an element
-                restrict: 'E',
-                // replace it
-                replace: true,
-                // use transclusion
-                transclude: true,
-                // local scope 
-                scope: {
-                    titleValue: "@clickableTitle"
-                },
-                // pretending we have a fancy set of HTML for the container
-                template: '<div><div>{{ titleValue }}</div><div ng-transclude></div></div>',
-                link: function (scope, element, attributes) {
-                    // copied and reformatted from doc examples here: http://docs.angularjs.org/guide/directive
-                    var opened = true;
-                    var title = angular.element(element.children()[0]);
-                    title.on('click', toggle);
+    sampleApp.directive('expandingContainer', function () {
+        return {
+            // must be an element
+            restrict: 'E',
+            // replace it
+            replace: true,
+            // use transclusion
+            transclude: true,
+            // local scope 
+            scope: {
+                titleValue: "@clickableTitle"
+            },
+            // pretending we have a fancy set of HTML for the container
+            template: '<div><div>{{ titleValue }}</div><div ng-transclude></div></div>',
+            link: function (scope, element, attributes) {
+                // copied and reformatted from doc examples here: http://docs.angularjs.org/guide/directive
+                var opened = true;
+                var title = angular.element(element.children()[0]);
+                title.on('click', toggle);
 
-                    function toggle () {
-                        opened = !opened;
-                        element.removeClass(opened ? 'closed' : 'opened');
-                        element.addClass(opened ? 'opened' : 'closed');
-                    };
+                function toggle () {
+                    opened = !opened;
+                    element.removeClass(opened ? 'closed' : 'opened');
+                    element.addClass(opened ? 'opened' : 'closed');
+                };
 
-                    toggle();
-                }
+                toggle();
             }
-        });
+        }
+    });
 
-        sampleApp.controller('TransclusionTemplatingController', function ($scope) {
-            $scope.content = "Some Dynamic Content";
-            $scope.title = "Click title to toggle visibility";
-        });
-    </script>
+    sampleApp.controller('TransclusionTemplatingController', function ($scope) {
+        $scope.content = "Some Dynamic Content";
+        $scope.title = "Click title to toggle visibility";
+    });
+</script>
 </body>
 </html>

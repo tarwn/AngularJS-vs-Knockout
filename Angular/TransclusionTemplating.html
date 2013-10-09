@@ -19,36 +19,36 @@
     </style>
 </head>
 <body>
-    <div ng-controller="TransclusionTemplatingController">
-        <!-- don't try to use myAwesomeContainer, it won't work -->
-        <my-awesome-container h1-title="{{ title }}">
-            Here is my content: "{{ content }}"
-        </my-awesome-container>
-    </div>
-    <script type="text/javascript">
-        var sampleApp = angular.module('sampleApp', []);
+<div ng-controller="TransclusionTemplatingController">
+    <!-- don't try to use myAwesomeContainer, it won't work -->
+    <my-awesome-container h1-title="{{ title }}">
+        Here is my content: "{{ content }}"
+    </my-awesome-container>
+</div>
+<script type="text/javascript">
+    var sampleApp = angular.module('sampleApp', []);
 
-        sampleApp.directive('myAwesomeContainer', function () {
-            return {
-                // must be an element
-                restrict: 'E',
-                // replace it
-                replace: true,
-                // use transclusion
-                transclude: true,
-                // local scope 
-                scope: {
-                    titleValue: "@h1Title"
-                },
-                // pretending we have a fancy set of HTML for the container
-                template: '<div class="fancy-pants"><h1>{{ titleValue }}</h1><div ng-transclude></div></div>'
-            }
-        });
+    sampleApp.directive('myAwesomeContainer', function () {
+        return {
+            // must be an element
+            restrict: 'E',
+            // replace it
+            replace: true,
+            // use transclusion
+            transclude: true,
+            // local scope 
+            scope: {
+                titleValue: "@h1Title"
+            },
+            // pretending we have a fancy set of HTML for the container
+            template: '<div class="fancy-pants"><h1>{{ titleValue }}</h1><div ng-transclude></div></div>'
+        }
+    });
 
-        sampleApp.controller('TransclusionTemplatingController', function ($scope) {
-            $scope.content = "Some Dynamic Content";
-            $scope.title = "A Dynamic Title";
-        });
-    </script>
+    sampleApp.controller('TransclusionTemplatingController', function ($scope) {
+        $scope.content = "Some Dynamic Content";
+        $scope.title = "A Dynamic Title";
+    });
+</script>
 </body>
 </html>

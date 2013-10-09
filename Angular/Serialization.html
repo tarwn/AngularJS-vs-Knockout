@@ -35,7 +35,7 @@
 
         // this one will show up
         $scope.model.calculatedInteger = 0;
-        $scope.$watch('model.integerValue', function(newVal, oldVal){
+        $scope.$watch('getCalculatedInteger()', function (newVal, oldVal) {
             $scope.model.calculatedInteger = $scope.model.getCalculatedInteger();
         });
 

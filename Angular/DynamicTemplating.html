@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html ng-app="sampleApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+    <style>
+        h1 {
+            font-size: 12pt
+        }
+    </style>
+</head>
+<body>
+<div ng-controller="TemplatingController">
+
+<h1>Dynamically Chosen Template</h1>
+Red: <input type="radio" value="red-template" ng-model="template" /><br />
+BLue: <input type="radio" value="blue-template" ng-model="template" /><br />
+
+<div {{ template }}="whatever"></div>
+
+</div>
+<script type="text/javascript">
+var sampleApp = angular.module('sampleApp', []);
+
+sampleApp.directive('redTemplate', function () {
+    return {
+        // must be a class
+        restrict: 'A',
+        // replace it
+        replace: true,
+        // just a basic div instead of pulling 
+        template: '<div>RED!</div>'
+    }
+});
+
+sampleApp.directive('blueTemplate', function () {
+    return {
+        // must be a class
+        restrict: 'A',
+        // replace it
+        replace: true,
+        // just a basic div instead of pulling 
+        template: '<div>BLUE!</div>'
+    }
+});
+
+sampleApp.controller('TemplatingController', function ($scope) {
+    $scope.template = 'red-template';
+});
+</script>
+</body>
+</html>
