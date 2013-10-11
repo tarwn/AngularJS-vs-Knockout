@@ -9,6 +9,19 @@
         h1 {
             font-size: 12pt
         }
+        .fancy-pants {
+            border: 3px dashed #008800;
+            background-color: #FFDDDD;
+            padding: 4px 4px 14px 4px;
+            width: 200px;
+            text-align: center;
+        }
+        .opened .box-to-hide{
+            display: block;
+        }
+        .closed  .box-to-hide{
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -34,14 +47,15 @@
                 titleValue: "@clickableTitle"
             },
             // pretending we have a fancy set of HTML for the container
-            template: '<div><div>{{ titleValue }}</div><div ng-transclude></div></div>',
+            template: '<div class="fancy-pants"><div>{{ titleValue }}</div><div ng-transclude class="box-to-hide"></div></div>',
             link: function (scope, element, attributes) {
                 // copied and reformatted from doc examples here: http://docs.angularjs.org/guide/directive
                 var opened = true;
                 var title = angular.element(element.children()[0]);
-                title.on('click', toggle);
+                title.bind('click', toggle);
 
-                function toggle () {
+                function toggle() {
+                    console.log("done");
                     opened = !opened;
                     element.removeClass(opened ? 'closed' : 'opened');
                     element.addClass(opened ? 'opened' : 'closed');
