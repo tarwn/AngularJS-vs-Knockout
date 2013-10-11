@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html ng-app="sampleApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+</head>
+<body>
+<div ng-controller="IfBindingController">
+	Raw Binding: {{ objectThatDoesNotExistYet.Property }}<br />
+    vs<br />
+    ngIf <i>(unstable only?)</i>: <div ng-if="objectThatDoesNotExistYet"> 
+        Conditional Binding: {{ objectThatDoesNotExistYet.Property }}
+    </div><br />
+    vs<br />
+    ngSwitch: <div ng-switch on="!objectThatDoesNotExistYet">
+                <div ng-switch-when="false">
+                    Conditional Binding: {{ objectThatDoesNotExistYet.Property }}
+                </div>
+              </div>
+    <a href="#" ng-click="toggleTheObject()">Toggle</a>
+</div>
+<script type="text/javascript">
+    var sampleApp = angular.module('sampleApp', []);
+
+    sampleApp.controller('IfBindingController', function ($scope) {
+        $scope.objectThatDoesNotExistYet = null;
+
+        $scope.toggleTheObject = function () {
+            if ($scope.objectThatDoesNotExistYet)
+                $scope.objectThatDoesNotExistYet = null;
+            else
+                $scope.objectThatDoesNotExistYet = { Property: 'The property value' };
+        };
+    });
+</script>
+</body>
+</html>
