@@ -9,7 +9,6 @@
 describe("Angular", function () {
     describe("Testing the ModuleDIController", function () {
         var $scope = null;
-        var controller = null;
 
         var expectedServiceResponse = [{ name: "A", number: 123 }];
         var mockService = {
@@ -19,20 +18,20 @@ describe("Angular", function () {
         beforeEach(module('sampleApp'));
         beforeEach(inject(function ($rootScope, $controller) {
             $scope = $rootScope.$new();
-            controller = $controller('ModuleDIController', {
+            $controller('ModuleDIController', {
                 $scope: $scope,
                 ListOfItemsService: mockService
             });
         }));
 
-        it('should start with an empty list of items', function () {
-            expect($scope.listOfItems).toEqual([]);
-        });
+it('should start with an empty list of items', function () {
+    expect($scope.listOfItems).toEqual([]);
+});
 
-        it('should populate list from service when fillItems() is called', function () {
-            $scope.fillItems();
-            expect($scope.listOfItems).toEqual(expectedServiceResponse);
-        });
+it('should populate list from service when fillItems() is called', function () {
+    $scope.fillItems();
+    expect($scope.listOfItems).toEqual(expectedServiceResponse);
+});
 
     });
 });

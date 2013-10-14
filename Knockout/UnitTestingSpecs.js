@@ -25,7 +25,7 @@ describe("Knockout", function () {
         async.beforeEach(function (done) {
             require(['Squire'], function (Squire) {
                 var squire = new Squire();
-                squire.mock(["sampleServices/ListOfItemsService"], mockService)
+                squire.mock("sampleServices/ListOfItemsService", mockService)
                       .require(["sampleApp/ModuleDIModel"], function (ModuleDIModel) {
                           viewmodel = new ModuleDIModel();
                           done();
@@ -33,15 +33,13 @@ describe("Knockout", function () {
             });
         });
 
-        async.it("should start with an empty list of items", function (done) {
+        it("should start with an empty list of items", function (done) {
             expect(viewmodel.listOfItems()).toEqual([]);
-            done();
         });
 
-        async.it("should populate list from service when fillItems() is called", function (done) {
+        it("should populate list from service when fillItems() is called", function (done) {
             viewmodel.fillItems();
             expect(viewmodel.listOfItems()).toEqual(expectedServiceResponse);
-            done();
         });
     });
 });
