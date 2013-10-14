@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html ng-app="sampleApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <script type="text/javascript" src="js/lib/angular-1.0.8.min.js"></script>
+    <style>
+        h1 {
+            font-size: 12pt
+        }
+    </style>
+</head>
+<body>
+<div ng-controller="TemplatingController">
+
+<h1>Dynamically Chosen Template</h1>
+Red: <input type="radio" value="red-template" ng-model="template" /><br />
+Blue: <input type="radio" value="blue-template" ng-model="template" /><br />
+
+<ng-include src='getTemplatePath()'></ng-include>
+
+</div>
+<script type="text/javascript">
+var sampleApp = angular.module('sampleApp', []);
+
+sampleApp.controller('TemplatingController', function ($scope) {
+    $scope.template = 'red-template';
+    $scope.getTemplatePath = function () {
+        return "templates/ngIncludeTemplating/" + $scope.template + ".html";
+    };
+
+    $scope.redModel = {
+        value: "red model value"
+    };
+    $scope.blueModel = {
+        value: "blue model value"
+    };
+});
+</script>
+</body>
+</html>

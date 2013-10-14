@@ -18,37 +18,37 @@
 Red: <input type="radio" value="red-template" ng-model="template" /><br />
 BLue: <input type="radio" value="blue-template" ng-model="template" /><br />
 
-<div {{ template }}="whatever"></div>
+<div class="{{ template }}: whatever"></div>
 
 </div>
 <script type="text/javascript">
-var sampleApp = angular.module('sampleApp', []);
+    var sampleApp = angular.module('sampleApp', []);
 
-sampleApp.directive('redTemplate', function () {
-    return {
-        // must be a class
-        restrict: 'A',
-        // replace it
-        replace: true,
-        // just a basic div instead of pulling 
-        template: '<div>RED!</div>'
-    }
-});
+    sampleApp.directive('redTemplate', function () {
+        return {
+            // must be a class
+            restrict: 'C',
+            // replace it
+            replace: true,
+            // just a basic div instead of pulling 
+            template: '<div>RED!</div>'
+        }
+    });
 
-sampleApp.directive('blueTemplate', function () {
-    return {
-        // must be a class
-        restrict: 'A',
-        // replace it
-        replace: true,
-        // just a basic div instead of pulling 
-        template: '<div>BLUE!</div>'
-    }
-});
+    sampleApp.directive('blueTemplate', function () {
+        return {
+            // must be a class
+            restrict: 'C',
+            // replace it
+            replace: true,
+            // just a basic div instead of pulling 
+            template: '<div>BLUE!</div>'
+        }
+    });
 
-sampleApp.controller('TemplatingController', function ($scope) {
-    $scope.template = 'red-template';
-});
+    sampleApp.controller('TemplatingController', function ($scope) {
+        $scope.template = 'red-template';
+    });
 </script>
 </body>
 </html>
